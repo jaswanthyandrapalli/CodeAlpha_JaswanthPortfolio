@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Terminal Portfolio</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="../about-me/styles.css">
+<link rel="stylesheet" href="css/tailwind.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  darkMode: 'class'
+}
+</script>
+
+</head>
+
+<body class="bg-white text-black dark:bg-[#111828] dark:text-white flex items-center justify-center min-h-screen p-4">
+
+<button id="darkToggle" class="fixed top-5 right-5 text-xl"  >
+🌙
+</button>
+
+<div class="terminal w-full max-w-4xl mx-4 rounded-xl border border-black dark:border-gray-700 shadow-lg overflow-hidden">
+
+
+<!-- Top Bar -->
+<div class="flex items-center justify-center px-6 py-3 
+bg-gray-200 dark:bg-[#111828] border-b border-black dark:border-gray-700">
+
+
+<p class="text-xl font-sans text-black  dark:text-white">
+나에 대하여
+</p>
+
+</div>
+
+<!-- Terminal Content -->
+<div class="p-8 md:p-12 font-sans leading-relaxed space-y-8 
+bg-white dark:bg-[#111828] text-black dark:text-emerald-400 rounded-b-xl">
+
+<p class="text-green-600 text-lg developer font-serif">{Developer}</p>
+
+<h1 class="text-red-500 text-5xl md:text-6xl font-serif tracking-widest leading-tight mb-2">
+Jaswanth
+</h1>
+
+<div class="pl-4 border-l-4 border-emerald-500">
+
+<p class="text-green-600">{intro}</p>
+
+<p class="text-xl font-serif mb-2 mt-2 dark:text-white ">
+&gt; <span id="typing-text"></span>
+</p>
+
+<p class="font-sans mt-2 dark:text-white">
+Crafting pixel-perfect web experiences with React, Node.js, and modern tooling.
+</p>
+
+</div>
+
+<!-- Projects -->
+<div class="mt-12 pt-6 border-t border-gray-300 dark:border-gray-700">
+
+<p class="text-green-600 text-lg font-serif">{Projects}</p>
+
+<p class="text-sm dark:text-white">
+.ecommerce/ .task-manager/ .weather-app/ .portfolio-cmd/
+</p>
+
+</div>
+
+</div>
+</div>
+<a href="index.html" class="mt-10 inline-block text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 fixed bottom-10 right-10">
+>>>
+</a>
+<script src="../about-me/script.js"></script>
+</body>
+</html>
