@@ -1,168 +1,537 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terminal Certifications</title>
+
+<title>Certifications</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: serif;
-  background: #0a0a0a;
+
+:root{
+--bg:#f3f4f6;
+--card-bg:#ffffff;
+--border:rgba(0,0,0,0.1);
+--border-active:rgba(0,0,0,0.3);
+--accent:#10b981;
+--text:#1f2937;
+--text-dim:#6b7280;
+--red:#b83c28;
+--angle:0deg;
 }
 
-.cert-card {
-  transition: all 0.3s ease;
+body{
+font-family:'JetBrains Mono', monospace;
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+overflow-x:hidden;
+position:relative;
 }
 
-.cert-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.3);
+/* CRT Scanlines */
+body::before{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(0,0,0,0.08),
+rgba(0,0,0,0.08) 1px,
+transparent 1px,
+transparent 2px
+);
+pointer-events:none;
+z-index:999;
 }
 
-.cert-header {
-  color: #ef4444;
-  font-weight: bold;
+/* Noise texture */
+body::after{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2"/%3E%3C/filter%3E%3Crect width="400" height="400" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+pointer-events:none;
+z-index:998;
 }
 
-.cert-issuer {
-  color: #999999;
-  font-size: 0.9rem;
-  margin-top: 8px;
+/* Grid */
+.cert-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+gap:20px;
+position:relative;
+z-index:1;
 }
 
-.cert-date {
-  color: #666666;
-  font-size: 0.9rem;
-  font-style: italic;
-  margin-top: 4px;
+/* Card */
+.cert-card{
+background:var(--card-bg);
+border:2px solid var(--border);
+border-radius:10px;
+padding:24px;
+position:relative;
+transition:0.35s;
+overflow:hidden;
 }
 
-.cert-description {
-  color: #999999;
-  font-size: 0.95rem;
-  margin-top: 12px;
-  line-height: 1.5;
+.cert-card::before{
+content:'';
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(184,60,40,0.8) 60deg,
+transparent 80deg
+);
+opacity:0;
+transition:opacity 0.3s;
+animation:none;
 }
 
-.terminal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #111828;
-  padding: 16px 24px;
-  border-bottom: 1px solid #374151;
-  border-radius: 16px 16px 0 0;
+.cert-card.active::before{
+content:'';
+position:absolute;
+inset:0;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(184,60,40,0.8) 60deg,
+transparent 80deg
+);
+opacity:1;
+animation:spin 2s linear infinite;
+pointer-events:none;
 }
 
-.terminal-dots {
-  display: flex;
-  gap: 8px;
+.cert-card:hover{
+transform:translateY(-12px) scale(1.02);
+box-shadow:0 24px 60px rgba(0,0,0,0.15), 0 0 30px rgba(184,60,40,0.3);
+border-color:var(--red);
+border-width:2px;
 }
 
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+.cert-card:hover::before{
+opacity:0.5;
+animation:spin 2s linear infinite;
 }
 
-.dot-red { background: #ef4444; }
-.dot-yellow { background: #eab308; }
-.dot-green { background: #22c55e; }
+.cert-card:hover .cert-title{
+color:#ff6b4a;
+}
+
+.cert-card:hover .cert-title::before,
+.cert-card:hover .cert-title::after{
+animation:glitch 0.15s infinite;
+opacity:1;
+}
+
+.cert-card:hover .cert-meta,
+.cert-card:hover .cert-desc{
+color:var(--accent);
+}
+
+/* Inner content wrapper to appear above border animation */
+.cert-card-inner{
+position:relative;
+z-index:2;
+}
+
+/* Title with glitch effect */
+.cert-title{
+font-size:15px;
+font-weight:700;
+color:var(--accent);
+margin-bottom:12px;
+position:relative;
+display:inline-block;
+transition:color 0.3s ease;
+text-shadow:0 0 0px transparent;
+}
+
+.cert-title::before{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#00ccff;
+clip-path:polygon(0 15%,100% 15%,100% 40%,0 40%);
+animation:glitch 0.3s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+.cert-title::after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#ff3366;
+clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);
+animation:glitch2 0.3s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+.cert-card.active .cert-title::before{
+animation:glitch 0.15s infinite;
+}
+
+.cert-card.active .cert-title::after{
+animation:glitch2 0.15s infinite;
+}
+
+@keyframes glitch{
+0%{transform:translateX(0);}
+25%{transform:translateX(-2px);}
+50%{transform:translateX(2px);}
+75%{transform:translateX(-1px);}
+100%{transform:translateX(0);}
+}
+
+@keyframes glitch2{
+0%{transform:translateX(0);}
+25%{transform:translateX(2px);}
+50%{transform:translateX(-2px);}
+75%{transform:translateX(1px);}
+100%{transform:translateX(0);}
+}
+
+/* meta */
+.cert-meta{
+font-size:12px;
+color:var(--text-dim);
+line-height:1.8;
+margin-bottom:10px;
+transition:color 0.3s ease;
+}
+
+/* description */
+.cert-desc{
+font-size:12px;
+color:var(--text-dim);
+line-height:1.6;
+border-top:1px solid var(--border);
+padding-top:10px;
+transition:color 0.3s ease;
+}
+
+/* card index */
+.card-index{
+position:absolute;
+top:12px;
+right:14px;
+font-size:11px;
+color:#9ca3af;
+z-index:3;
+}
+
+/* Spin animation for border runner */
+@keyframes spin{
+from{ --angle:0deg; }
+to{ --angle:360deg; }
+}
+
+/* Stagger reveal animation */
+.cert-card{
+opacity:0;
+transform:translateY(25px);
+animation:none;
+}
+
+.cert-card.revealed{
+opacity:1;
+transform:translateY(0);
+animation:fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* Dark mode */
+.dark{
+--bg:#111827;
+--card-bg:#1f2937;
+--text:#e5e7eb;
+--text-dim:#9ca3af;
+--border:rgba(255,255,255,0.08);
+--border-active:rgba(255,255,255,0.25);
+--accent:#34d399;
+--red:#e05535;
+}
+
 </style>
-<script>
-tailwind.config = {
-  darkMode: 'class'
-}
-</script>
-
 </head>
 
-<body class="dark:bg-[#111828] bg-white flex items-center justify-center min-h-screen text-gray-300">
-  <button id="darkToggle" class="fixed top-5 right-5 text-xl">🌙</button>
 
-  <div class="w-full max-w-5xl rounded-2xl shadow-2xl border border-gray-800">
-    
-    <!-- HEADER -->
-    <div class="terminal-header">
-      <div class="terminal-dots">
-        <div class="dot dot-red"></div>
-        <div class="dot dot-yellow"></div>
-        <div class="dot dot-green"></div>
-      </div>
-      <p class="text-white text-xl">~/certifications</p>
-    </div>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <!-- BODY -->
-    <div class="p-8 space-y-6 bg-black dark:bg-[#0a0a0a]">
+<!-- DARK MODE BUTTON (TOP RIGHT) -->
 
-      <p class="text-green-600 font-serif">{certifications.sh}</p>
-      <p class="text-gray-400 font-serif">../loading certifications...</p>
+<button onclick="toggleDark()"
+class="fixed top-5 right-5 text-xl z-50">
+🌙
+</button>
 
-      <!-- CERTIFICATIONS GRID -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
 
-        <!-- Card 1 -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">REDHAT-D101</h3>
-          <p class="cert-issuer">Issuer: Red Hat</p>
-          <p class="cert-date">Date: 2023-06</p>
-          <p class="cert-description">Certification in Red Hat Linux system administration and management.</p>
-        </div>
+<div class="w-full max-w-5xl">
 
-        <!-- Card 2 -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">Google Associate Android Developer</h3>
-          <p class="cert-issuer">Issuer: Google</p>
-          <p class="cert-date">Date: 2024-12</p>
-          <p class="cert-description">Certification in Android application development using modern tools and practices.</p>
-        </div>
+<h1 class="text-3xl font-mono font-bold mb-8 text-center">
+인증서
+</h1>
 
-        <!-- Card 3 -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">Palo Alto Cybersecurity Beginner</h3>
-          <p class="cert-issuer">Issuer: EduSkills</p>
-          <p class="cert-date">Date: 2025-03</p>
-          <p class="cert-description">Fundamental concepts of network security, threat prevention, and security best practices using Palo Alto Networks technologies.</p>
-        </div>
+<div class="cert-grid">
 
-        <!-- Card 4 -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">CyberSecurity Internship</h3>
-          <p class="cert-issuer">Issuer: Edunet Foundation</p>
-          <p class="cert-date">Date: 15-Jan-2025 - 26-Feb-2025</p>
-          <p class="cert-description">Hands-on experience in cybersecurity practices, threat analysis, and security implementation through an intensive internship program.</p>
-        </div>
+<div class="cert-card" data-index="0">
 
-        <!-- Card 5 -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">IIOT (Industrial Internet of Things)</h3>
-          <p class="cert-issuer">Issuer: NPTEL</p>
-          <p class="cert-date">Date: Jul-2025 - OCT-2025</p>
-          <p class="cert-description">Comprehensive understanding of Industrial Internet of Things (IIoT) technologies, applications, and security considerations.</p>
-        </div>
+<div class="cert-card-inner">
+<span class="card-index">01</span>
 
-        <!-- Card 6 (Empty for Optional) -->
-        <div class="cert-card bg-[#161a21] p-6 rounded-lg border border-gray-800 hover:border-green-600">
-          <h3 class="cert-header text-lg">Web Development Professional</h3>
-          <p class="cert-issuer">Issuer: CodeAlpha</p>
-          <p class="cert-date">Date: 2026-03</p>
-          <p class="cert-description">Advanced web development skills including HTML5, CSS3, JavaScript, Tailwind CSS, and React.js frameworks.</p>
-        </div>
+<div class="cert-title" data-text="REDHAT-D101">
+REDHAT-D101
+</div>
 
-      </div>
+<div class="cert-meta">
+Issuer : Red Hat<br>
+Date : 2023-06
+</div>
 
-      <p class="text-green-600 pt-6">➜ ~ certifications loaded successfully ✔</p>
+<p class="cert-desc">
+Certification in Red Hat Linux system administration and management.
+</p>
+</div>
 
-    </div>
+</div>
 
-  </div>
 
-  <script src="../about-me/script.js"></script>
+<div class="cert-card" data-index="1">
+
+<div class="cert-card-inner">
+<span class="card-index">02</span>
+
+<div class="cert-title" data-text="Infosis Python Certificate">
+Infosis Python Certificate
+</div>
+
+<div class="cert-meta">
+Issuer : Infosys<br>
+Date : 2025-03
+</div>
+
+<p class="cert-desc">
+Comprehensive Python programming course covering data structures, OOP, and practical applications.
+</p>
+</div>
+
+</div>
+
+
+<div class="cert-card" data-index="2">
+
+<div class="cert-card-inner">
+<span class="card-index">03</span>
+
+<div class="cert-title" data-text="NPTEL Data Science using Python">
+NPTEL Data Science using Python
+</div>
+
+<div class="cert-meta">
+Issuer : NPTEL<br>
+Date : 2025-08
+</div>
+
+<p class="cert-desc">
+Data science fundamentals including machine learning, data visualization, and statistical analysis using Python.
+</p>
+</div>
+
+</div>
+
+
+<div class="cert-card" data-index="3">
+
+<div class="cert-card-inner">
+<span class="card-index">04</span>
+
+<div class="cert-title" data-text="Agnivra Full Stack Development">
+Agnivra Full Stack Development
+</div>
+
+<div class="cert-meta">
+Issuer : Agnivra<br>
+Date : 2026-06
+</div>
+
+<p class="cert-desc">
+Complete full stack development program covering frontend, backend, databases, and deployment technologies.
+</p>
+</div>
+
+</div>
+
+
+<div class="cert-card" data-index="4">
+
+<div class="cert-card-inner">
+<span class="card-index">05</span>
+
+<div class="cert-title" data-text="IIOT (Industrial Internet of Things)">
+IIOT (Industrial Internet of Things)
+</div>
+
+<div class="cert-meta">
+Issuer : NPTEL<br>
+Date : Jul-2025 → Oct-2025
+</div>
+
+<p class="cert-desc">
+Understanding Industrial IoT technologies and applications.
+</p>
+</div>
+
+</div>
+
+
+<div class="cert-card" data-index="5">
+
+<div class="cert-card-inner">
+<span class="card-index">06</span>
+
+<div class="cert-title" data-text="Web Development Professional">
+Web Development Professional
+</div>
+
+<div class="cert-meta">
+Issuer : CodeAlpha<br>
+Date : 2026-03
+</div>
+
+<p class="cert-desc">
+HTML, CSS, JavaScript, Tailwind CSS and React development skills.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- EXIT BUTTON (BOTTOM RIGHT) -->
+
+<a href="index.html"
+class="fixed bottom-10 right-10 bg-yellow-500 text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 z-50">
+>>>
+</a>
+
+
+<script>
+
+/* Dark Mode */
+
+function toggleDark(){
+document.body.classList.toggle("dark")
+}
+
+
+/* Reveal animation with stagger */
+
+const cards=document.querySelectorAll(".cert-card")
+let animationDelay=0;
+
+const observer=new IntersectionObserver((entries)=>{
+entries.forEach((entry,idx)=>{
+if(entry.isIntersecting){
+const card=entry.target;
+setTimeout(()=>{
+card.classList.add("revealed");
+observer.unobserve(card);
+},idx*120);
+}
+})
+})
+
+cards.forEach(card=>{
+observer.observe(card)
+})
+
+
+/* Auto-cycling active card highlight */
+
+let currentActiveIndex=0;
+let cycleInterval;
+let isUserHovering=false;
+
+function setActiveCard(index){
+cards.forEach((card,idx)=>{
+if(idx===index){
+card.classList.add("active");
+} else {
+card.classList.remove("active");
+}
+})
+currentActiveIndex=index;
+}
+
+function startCycle(){
+cycleInterval=setInterval(()=>{
+if(!isUserHovering){
+currentActiveIndex=(currentActiveIndex+1)%cards.length;
+setActiveCard(currentActiveIndex);
+}
+},1800); // 1.8 seconds per card
+}
+
+function stopCycle(){
+clearInterval(cycleInterval);
+}
+
+// Start the cycling animation
+startCycle();
+
+// Hover events to interrupt cycle
+cards.forEach((card,idx)=>{
+card.addEventListener("mouseenter",()=>{
+isUserHovering=true;
+stopCycle();
+setActiveCard(idx);
+});
+
+card.addEventListener("mouseleave",()=>{
+isUserHovering=false;
+currentActiveIndex=idx;
+startCycle();
+});
+});
+
+</script>
 
 </body>
-
 </html>
+```

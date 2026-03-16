@@ -10,16 +10,274 @@
 <link rel="stylesheet" href="../about-me/styles.css">
 <link rel="stylesheet" href="css/tailwind.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script>
 tailwind.config = {
   darkMode: 'class'
 }
 </script>
 
-</head>
+<style>
 
-<body class="bg-white text-black dark:bg-[#111828] dark:text-white flex items-center justify-center min-h-screen p-4">
+:root{
+--red:#ef4444;
+--accent:#10b981;
+--angle:0deg;
+}
+
+html{
+scroll-behavior: smooth;
+}
+
+body{
+font-family:'JetBrains Mono', monospace;
+position:relative;
+}
+
+/* CRT Scanlines */
+body::before{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(0,0,0,0.08),
+rgba(0,0,0,0.08) 1px,
+transparent 1px,
+transparent 2px
+);
+pointer-events:none;
+z-index:999;
+will-change:transform;
+}
+
+/* Noise texture */
+body::after{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2"/%3E%3C/filter%3E%3Crect width="400" height="400" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+pointer-events:none;
+z-index:998;
+}
+
+/* Glitch animations */
+@keyframes glitch{
+0%{transform:translateX(0);}
+25%{transform:translateX(-2px);}
+50%{transform:translateX(2px);}
+75%{transform:translateX(-1px);}
+100%{transform:translateX(0);}
+}
+
+@keyframes glitch2{
+0%{transform:translateX(0);}
+25%{transform:translateX(2px);}
+50%{transform:translateX(-2px);}
+75%{transform:translateX(1px);}
+100%{transform:translateX(0);}
+}
+
+/* Spin animation for border runner */
+@keyframes spin{
+from{ --angle:0deg; }
+to{ --angle:360deg; }
+}
+
+/* Scroll and Motion animations */
+@keyframes slideInLeft{
+from{
+opacity:0;
+transform:translateX(-40px) rotateZ(-2deg);
+}
+to{
+opacity:1;
+transform:translateX(0) rotateZ(0deg);
+}
+}
+
+@keyframes slideInRight{
+from{
+opacity:0;
+transform:translateX(40px) rotateZ(2deg);
+}
+to{
+opacity:1;
+transform:translateX(0) rotateZ(0deg);
+}
+}
+
+@keyframes scaleReveal{
+from{
+opacity:0;
+transform:scale(0.85) translateY(20px);
+}
+to{
+opacity:1;
+transform:scale(1) translateY(0);
+}
+}
+
+@keyframes fadeInUp{
+from{
+opacity:0;
+transform:translateY(30px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* Terminal window with animated border */
+.terminal{
+position:relative;
+overflow:hidden;
+transition:all 0.4s ease;
+}
+
+.terminal::before{
+content:'';
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(239,68,68,0.8) 60deg,
+transparent 80deg
+);
+opacity:0;
+transition:opacity 0.3s;
+animation:none;
+}
+
+.terminal.active::before{
+content:'';
+position:absolute;
+inset:0;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(239,68,68,0.8) 60deg,
+transparent 80deg
+);
+opacity:1;
+animation:spin 2s linear infinite;
+pointer-events:none;
+}
+
+.terminal:hover{
+transform:translateY(-8px) scale(1.01);
+box-shadow:0 24px 60px rgba(0,0,0,0.15), 0 0 30px rgba(239,68,68,0.3);
+border-color:var(--red);
+}
+
+.terminal:hover::before{
+opacity:0.4;
+animation:spin 2s linear infinite;
+}
+
+/* Content section animations */
+.terminal-content{
+opacity:0;
+transform:translateY(30px);
+animation:fadeInUp 0.8s ease-out forwards;
+position:relative;
+z-index:2;
+}
+
+.terminal-content.scrolled{
+animation:fadeInUp 0.8s ease-out forwards;
+}
+
+/* Title glitch effect */
+h1{
+position:relative;
+display:inline-block;
+transition:color 0.3s ease;
+text-shadow:0 0 0px transparent;
+}
+
+h1::before{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#00ccff;
+clip-path:polygon(0 15%,100% 15%,100% 40%,0 40%);
+animation:glitch 0.4s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+h1::after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#ff3366;
+clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);
+animation:glitch2 0.4s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+.terminal:hover h1::before,
+.terminal:hover h1::after{
+opacity:1;
+animation:glitch 0.15s infinite;
+}
+
+.terminal:hover h1{
+color:#ff6b4a;
+}
+
+/* Enhanced text effects */
+.developer{
+animation:slideInLeft 0.6s ease-out;
+}
+
+.intro-section{
+animation:slideInRight 0.8s ease-out;
+animation-delay:0.2s;
+animation-fill-mode:both;
+}
+
+/* Border left animation */
+.pl-4{
+position:relative;
+}
+
+.pl-4::before{
+content:'';
+position:absolute;
+left:0;
+top:0;
+width:4px;
+height:0%;
+background:linear-gradient(to bottom, var(--accent), transparent);
+animation:borderExpand 0.8s ease-out forwards;
+}
+
+@keyframes borderExpand{
+from{height:0%;}
+to{height:100%;}
+}
+
+</style></head>
+
+<body class="bg-white text-black dark:bg-[#111828] dark:text-white flex items-center justify-center min-h-screen p-4" style="font-family: 'JetBrains Mono', monospace;">
 
 <button id="darkToggle" class="fixed top-5 right-5 text-xl"  >
 🌙
@@ -45,11 +303,11 @@ bg-white dark:bg-[#111828] text-black dark:text-emerald-400 rounded-b-xl">
 
 <p class="text-green-600 text-lg developer font-serif">{Developer}</p>
 
-<h1 class="text-red-500 text-5xl md:text-6xl font-serif tracking-widest leading-tight mb-2">
+<h1 class="text-red-500 text-5xl md:text-6xl font-serif tracking-widest leading-tight mb-2" data-text="Jaswanth">
 Jaswanth
 </h1>
 
-<div class="pl-4 border-l-4 border-emerald-500">
+<div class="pl-4 border-l-4 border-emerald-500 intro-section">
 
 <p class="text-green-600">{intro}</p>
 
@@ -76,9 +334,97 @@ Crafting pixel-perfect web experiences with React, Node.js, and modern tooling.
 
 </div>
 </div>
-<a href="index.html" class="mt-10 inline-block text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 fixed bottom-10 right-10">
+<a href="index.html" class="mt-10 inline-block bg-yellow-500 text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 fixed bottom-10 right-10">
 >>>
 </a>
 <script src="../about-me/script.js"></script>
+
+<script>
+
+/* Parallax scroll effect */
+window.addEventListener('scroll', () => {
+const scrollY = window.scrollY;
+const body = document.body;
+body.style.setProperty('--scroll-y', scrollY + 'px');
+});
+
+/* Scroll reveal for content sections */
+const terminal = document.querySelector('.terminal');
+const contentObserver = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if(entry.isIntersecting) {
+entry.target.classList.add('scrolled');
+contentObserver.unobserve(entry.target);
+}
+});
+}, {
+threshold: 0.1,
+rootMargin: '0px 0px -50px 0px'
+});
+
+const terminalContent = document.querySelector('.p-8');
+if(terminalContent) {
+terminalContent.classList.add('terminal-content');
+contentObserver.observe(terminalContent);
+}
+
+/* Auto-cycling active border highlight */
+let currentActive = 0;
+let cycleInterval;
+let isUserHoveringTerminal = false;
+
+function setTerminalActive(active) {
+const term = document.querySelector('.terminal');
+if(active) {
+term.classList.add('active');
+} else {
+term.classList.remove('active');
+}
+currentActive = active ? 1 : 0;
+}
+
+function startCycle() {
+cycleInterval = setInterval(() => {
+if(!isUserHoveringTerminal) {
+currentActive = (currentActive + 1) % 2;
+setTerminalActive(currentActive === 1);
+}
+}, 1800);
+}
+
+function stopCycle() {
+clearInterval(cycleInterval);
+}
+
+// Start cycling
+startCycle();
+
+// Terminal hover events
+const terminalEl = document.querySelector('.terminal');
+if(terminalEl) {
+terminalEl.addEventListener('mouseenter', () => {
+isUserHoveringTerminal = true;
+stopCycle();
+setTerminalActive(true);
+});
+
+terminalEl.addEventListener('mouseleave', () => {
+isUserHoveringTerminal = false;
+currentActive = 0;
+startCycle();
+});
+}
+
+/* Mouse parallax depth effect */
+document.addEventListener('mousemove', (e) => {
+const mouseX = e.clientX / window.innerWidth;
+const mouseY = e.clientY / window.innerHeight;
+const depth = 8;
+document.body.style.setProperty('--mouse-x', (mouseX * depth) + 'px');
+document.body.style.setProperty('--mouse-y', (mouseY * depth) + 'px');
+});
+
+</script>
+
 </body>
 </html>

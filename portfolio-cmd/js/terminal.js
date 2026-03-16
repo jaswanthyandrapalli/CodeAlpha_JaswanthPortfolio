@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('terminal-container');
 
     const commands = {
-        'help': 'Available: cd  about cd projects cd skills cd contact clear',
+        'help': 
+        'Available: {cd about} ,{cd projects} ,{cd skills} ,{cd certifications} ,{clear}',
         'cd about': () => window.location.href = 'about.html',
         'cd projects': () => window.location.href = 'projects.html',
         'cd skills': () => window.location.href = 'skills.html',
-        'cd contact': () => window.location.href = 'contact.html',
+        'cd certifications': () => window.location.href = 'certifications.html',
         'clear': () => { output.innerHTML = ''; return ''; }
     };
 
@@ -80,10 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Welcome
-    typeEffect('Portfolio CMD v2.0 loaded', () => {
-        typeEffect('\\nType help for navigation.', () => addOutput(''));
-    });
+    // Welcome - only show if not already displayed
+    if (!window.skipDefaultWelcome) {
+        typeEffect('Portfolio CMD v2.0 loaded', () => {
+            typeEffect('\\nType help for navigation.', () => addOutput(''));
+        });
+    }
 
     container.addEventListener('click', () => input.focus());
 

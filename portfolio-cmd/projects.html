@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="../about-me/styles.css">
 <link rel="stylesheet" href="css/tailwind.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <script>
 tailwind.config = {
@@ -18,9 +18,290 @@ tailwind.config = {
 }
 </script>
 
-</head>
+<style>
 
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 flex items-center justify-center min-h-screen p-4 font-sans">
+:root{
+--red:#ef4444;
+--accent:#10b981;
+--angle:0deg;
+}
+
+html{
+scroll-behavior: smooth;
+}
+
+body{
+position:relative;
+}
+
+/* CRT Scanlines */
+body::before{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(0,0,0,0.08),
+rgba(0,0,0,0.08) 1px,
+transparent 1px,
+transparent 2px
+);
+pointer-events:none;
+z-index:999;
+will-change:transform;
+}
+
+/* Noise texture */
+body::after{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2"/%3E%3C/filter%3E%3Crect width="400" height="400" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+pointer-events:none;
+z-index:998;
+}
+
+/* Glitch animations */
+@keyframes glitch{
+0%{transform:translateX(0);}
+25%{transform:translateX(-2px);}
+50%{transform:translateX(2px);}
+75%{transform:translateX(-1px);}
+100%{transform:translateX(0);}
+}
+
+@keyframes glitch2{
+0%{transform:translateX(0);}
+25%{transform:translateX(2px);}
+50%{transform:translateX(-2px);}
+75%{transform:translateX(1px);}
+100%{transform:translateX(0);}
+}
+
+/* Spin animation for border runner */
+@keyframes spin{
+from{ --angle:0deg; }
+to{ --angle:360deg; }
+}
+
+/* Scroll and Motion animations */
+@keyframes slideInLeft{
+from{
+opacity:0;
+transform:translateX(-40px) rotateZ(-2deg);
+}
+to{
+opacity:1;
+transform:translateX(0) rotateZ(0deg);
+}
+}
+
+@keyframes slideInRight{
+from{
+opacity:0;
+transform:translateX(40px) rotateZ(2deg);
+}
+to{
+opacity:1;
+transform:translateX(0) rotateZ(0deg);
+}
+}
+
+@keyframes scaleReveal{
+from{
+opacity:0;
+transform:scale(0.85) translateY(20px);
+}
+to{
+opacity:1;
+transform:scale(1) translateY(0);
+}
+}
+
+@keyframes floatUp{
+0%{
+opacity:0;
+transform:translateY(30px);
+}
+50%{
+opacity:1;
+}
+100%{
+opacity:1;
+transform:translateY(-10px);
+}
+}
+
+@keyframes borderExpand{
+from{height:0%;}
+to{height:100%;}
+}
+
+@keyframes fadeInUp{
+from{
+opacity:0;
+transform:translateY(30px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* Project card animations */
+.project-card{
+opacity:0;
+transform:translateY(25px);
+animation:none;
+will-change:transform,opacity;
+position:relative;
+overflow:hidden;
+transition:all 0.35s;
+}
+
+.project-card:nth-child(1){
+animation:slideInLeft 0.8s ease-out forwards;
+}
+
+.project-card:nth-child(2){
+animation:scaleReveal 0.8s ease-out forwards;
+animation-delay:0.2s;
+}
+
+.project-card:nth-child(3){
+animation:slideInRight 0.8s ease-out forwards;
+animation-delay:0.4s;
+}
+
+.project-card::before{
+content:'';
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(239,68,68,0.8) 60deg,
+transparent 80deg
+);
+opacity:0;
+transition:opacity 0.3s;
+animation:none;
+border-radius:8px;
+}
+
+.project-card.active::before{
+content:'';
+position:absolute;
+inset:0;
+background:conic-gradient(
+from var(--angle,0deg),
+transparent 0deg,
+var(--red) 40deg,
+rgba(239,68,68,0.8) 60deg,
+transparent 80deg
+);
+opacity:1;
+animation:spin 2s linear infinite;
+pointer-events:none;
+border-radius:8px;
+}
+
+.project-card.revealed{
+opacity:1;
+transform:translateY(0);
+animation:fadeInUp 0.6s ease-out forwards;
+}
+
+.project-card:hover{
+transform:translateY(-12px) scale(1.02);
+box-shadow:0 24px 60px rgba(0,0,0,0.15), 0 0 30px rgba(239,68,68,0.3);
+border-color:var(--red);
+border-width:2px;
+}
+
+.project-card:hover::before{
+opacity:0.5;
+animation:spin 2s linear infinite;
+}
+
+.project-card:hover h2{
+color:#ff6b4a;
+}
+
+.project-card:hover h2::before,
+.project-card:hover h2::after{
+animation:glitch 0.15s infinite;
+opacity:1;
+}
+
+.project-card:hover p{
+color:var(--accent);
+}
+
+/* Project content wrapper */
+.project-card-inner{
+position:relative;
+z-index:2;
+}
+
+/* Title with glitch effect */
+h2{
+position:relative;
+display:inline-block;
+transition:color 0.3s ease;
+text-shadow:0 0 0px transparent;
+}
+
+h2::before{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#00ccff;
+clip-path:polygon(0 15%,100% 15%,100% 40%,0 40%);
+animation:glitch 0.3s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+h2::after{
+content:attr(data-text);
+position:absolute;
+left:0;
+top:0;
+color:#ff3366;
+clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);
+animation:glitch2 0.3s infinite;
+opacity:0;
+transition:opacity 0.3s;
+}
+
+.project-card.active h2::before{
+animation:glitch 0.15s infinite;
+}
+
+.project-card.active h2::after{
+animation:glitch2 0.15s infinite;
+}
+
+/* Description transition */
+p{
+transition:color 0.3s ease;
+}
+
+</style></head>
+
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 flex items-center justify-center min-h-screen p-4 font-mono" style="font-family: 'JetBrains Mono', monospace;">
 
 <!-- Dark Mode Toggle -->
 <button id="darkToggle" class="fixed top-5 right-5 text-xl z-50">
@@ -41,39 +322,42 @@ tailwind.config = {
   <div class="projects flex flex-col gap-8 md:p-8 leading-relaxed space-y-8">
 
     <!-- Project 1 -->
-    <div class="project1 border border-gray-300 dark:border-gray-600 p-4 rounded-lg 
-    transform transition duration-300 hover:scale-105 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-800">
-      <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2">{Ambulance-Connect AI}</h2>
-      <p class="text-gray-700 dark:text-gray-400 mb-3">
-         AI-powered ambulance management system.
-      </p>
-      <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
-        >>> Spell Out
-      </a>
+    <div class="project-card project1 border border-gray-300 dark:border-gray-600 p-4 rounded-lg bg-white dark:bg-gray-800" data-index="0">
+      <div class="project-card-inner">
+        <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2" data-text="{Ambulance-Connect AI}">{Ambulance-Connect AI}</h2>
+        <p class="text-gray-700 dark:text-gray-400 mb-3">
+           AI-powered ambulance management system.
+        </p>
+        <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
+          >>> Spell Out
+        </a>
+      </div>
     </div>
 
     <!-- Project 2 -->
-    <div class="project2 border border-gray-300 dark:border-gray-600 p-4 rounded-lg 
-    transform transition duration-300 hover:scale-105 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-800">
-      <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2">{E-commerce Platform}</h2>
-      <p class="text-gray-700 dark:text-gray-400 mb-3">
-        Full-stack online store with React and Node.js.
-      </p>
-      <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
-        >>> Spell Out
-      </a>
+    <div class="project-card project2 border border-gray-300 dark:border-gray-600 p-4 rounded-lg bg-white dark:bg-gray-800" data-index="1">
+      <div class="project-card-inner">
+        <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2" data-text="{E-commerce Platform}">{E-commerce Platform}</h2>
+        <p class="text-gray-700 dark:text-gray-400 mb-3">
+          Full-stack online store with React and Node.js.
+        </p>
+        <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
+          >>> Spell Out
+        </a>
+      </div>
     </div>
 
     <!-- Project 3 -->
-    <div class="project3 border border-gray-300 dark:border-gray-600 p-4 rounded-lg 
-    transform transition duration-300 hover:scale-105 hover:-translate-y-2 hover:shadow-xl bg-white dark:bg-gray-800">
-      <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2">{Weather-App}</h2>
-      <p class="text-gray-700 dark:text-gray-400 mb-3">
-        Real-time weather information with a clean UI.
-      </p>
-      <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
-        >>> Spell Out
-      </a>
+    <div class="project-card project3 border border-gray-300 dark:border-gray-600 p-4 rounded-lg bg-white dark:bg-gray-800" data-index="2">
+      <div class="project-card-inner">
+        <h2 class="text-2xl font-mono font-semibold text-gray-900 dark:text-emerald-400 mb-2" data-text="{Weather-App}">{Weather-App}</h2>
+        <p class="text-gray-700 dark:text-gray-400 mb-3">
+          Real-time weather information with a clean UI.
+        </p>
+        <a href="#" class="text-white bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-lg font-mono text-sm hover:bg-blue-500 hover:dark:bg-blue-400 transition transform hover:scale-105">
+          >>> Spell Out
+        </a>
+      </div>
     </div>
 
   </div>
@@ -81,11 +365,99 @@ tailwind.config = {
 </div>
 
 <!-- Back Button -->
-<a href="index.html" class="mt-10 inline-block text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 fixed bottom-10 right-10">
+<a href="index.html" class=" bg-yellow-500 mt-10 inline-block text-gray-700 dark:text-yellow-300 px-4 py-2 border border-gray-400/20 rounded-lg font-mono text-xl transition transform hover:scale-110 hover:text-yellow-500 hover:bg-gray-200 dark:hover:bg-gray-700 fixed bottom-10 right-10">
 >>>
 </a>
 
 <script src="../about-me/script.js"></script>
+
+<script>
+
+/* Parallax scroll effect */
+window.addEventListener('scroll', () => {
+const scrollY = window.scrollY;
+const body = document.body;
+body.style.setProperty('--scroll-y', scrollY + 'px');
+});
+
+/* Scroll reveal for project cards */
+const projectCards = document.querySelectorAll('.project-card');
+const projectObserver = new IntersectionObserver((entries) => {
+entries.forEach((entry, idx) => {
+if(entry.isIntersecting) {
+const card = entry.target;
+setTimeout(() => {
+card.classList.add('revealed');
+projectObserver.unobserve(card);
+}, idx * 120);
+}
+});
+}, {
+threshold: 0.1,
+rootMargin: '0px 0px -50px 0px'
+});
+
+projectCards.forEach(card => {
+projectObserver.observe(card);
+});
+
+/* Auto-cycling active card highlight */
+let currentActiveIndex = 0;
+let cycleInterval;
+let isUserHovering = false;
+
+function setActiveCard(index) {
+projectCards.forEach((card, idx) => {
+if(idx === index) {
+card.classList.add('active');
+} else {
+card.classList.remove('active');
+}
+});
+currentActiveIndex = index;
+}
+
+function startCycle() {
+cycleInterval = setInterval(() => {
+if(!isUserHovering) {
+currentActiveIndex = (currentActiveIndex + 1) % projectCards.length;
+setActiveCard(currentActiveIndex);
+}
+}, 1800); // 1.8 seconds per card
+}
+
+function stopCycle() {
+clearInterval(cycleInterval);
+}
+
+// Start the cycling animation
+startCycle();
+
+// Hover events to interrupt cycle
+projectCards.forEach((card, idx) => {
+card.addEventListener('mouseenter', () => {
+isUserHovering = true;
+stopCycle();
+setActiveCard(idx);
+});
+
+card.addEventListener('mouseleave', () => {
+isUserHovering = false;
+currentActiveIndex = idx;
+startCycle();
+});
+});
+
+/* Mouse parallax depth effect */
+document.addEventListener('mousemove', (e) => {
+const mouseX = e.clientX / window.innerWidth;
+const mouseY = e.clientY / window.innerHeight;
+const depth = 8;
+document.body.style.setProperty('--mouse-x', (mouseX * depth) + 'px');
+document.body.style.setProperty('--mouse-y', (mouseY * depth) + 'px');
+});
+
+</script>
 
 </body>
 </html>
